@@ -6,7 +6,7 @@ from pygame import mixer
 pygame.init()
 
 screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption('Space Invaders')
+pygame.display.set_caption('FIFA 2023')
 icon = pygame.image.load('icon.png')
 background = pygame.image.load('background.png')
 pygame.display.set_icon(icon)
@@ -46,6 +46,9 @@ bulletY = playerY
 bullet_xChange = 0
 bullet_yChange = 5
 fire = False
+extra_bullets = int((enemy_num*lives) * 0.1)
+bullet_num = int((enemy_num*lives) + extra_bullets)
+print(bullet_num)
 
 current_score = 0
 kills = 0
@@ -58,8 +61,17 @@ font3 = pygame.font.Font('freesansbold.ttf', 40)
 
 
 def showScore():
+    # show the score data on the screen
     score = font.render('SCORE: ' + str(current_score), True, (120, 200, 45))
     screen.blit(score, (10, 10))
+
+    # show the number of bullets left on the screen
+    if bullet_num > 15:
+        bullets = font.render('BULLETS: ' + str(bullet_num), True, (120, 200, 45))
+        screen.blit(bullets, (550, 10))
+    else:
+        bullets = font.render('BULLETS: ' + str(bullet_num), True, (200, 10, 5))
+        screen.blit(bullets, (550, 10))
 
 
 def winGame():
@@ -93,6 +105,7 @@ def enemy(x, y, j):
 
 def bullet():
     global fire
+    global bullet_num
 
     fire = True
     screen.blit(bulletImg, (bulletX + 16, bulletY + 10))
@@ -116,11 +129,12 @@ while running:
             if event.key == pygame.K_RIGHT:
                 xChange += 2.5
             if event.key == pygame.K_SPACE:
-                if not fire:
+                if not fire and bullet_num > 0:
                     shoot = mixer.Sound('fire.mp3')
                     shoot.play()
                     bullet()
                     bulletX = playerX
+                    bullet_num -= 1
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 xChange = 0
